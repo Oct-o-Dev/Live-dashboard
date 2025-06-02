@@ -1,0 +1,19 @@
+/* Basic CSS reset */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* If using Tailwind, include the Tailwind directives: */
+
+/* You can add your global styles below */
+body {
+  font-family: sans-serif;
+  background: #f9f9f9;
+}

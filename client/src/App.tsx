@@ -1,32 +1,41 @@
-import { useEffect, useState } from 'react';
-import { socket } from './socket';
-import type { EventData } from './types/EventData';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { LandingNavbar } from './components/Navbar/LandingNavbar';
+import { DashboardNavbar } from './components/Navbar/DashboardNavbar';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { LandingPage } from './pages/LandingPage';
+import { Login } from './auth/Login';
+import { Signup } from './auth/Signup';
+import { Dashboard } from './dashboard/Dashboard';
 
-function App() {
-  const [events, setEvents] = useState<EventData[]>([]);
-
-  useEffect(() => {
-    socket.on('new_event', (data) => {
-      setEvents((prev) => [data, ...prev]);
-    });
-
-    return () => {
-      socket.off('new_event');
-    };
-  }, []);
+function AppContent() {
+  const location = useLocation();
+  const isDashboard = location.pathname.startsWith('/dashboard');
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Live Event Feed</h1>
-      <ul className="space-y-2">
-        {events.map((e, idx) => (
-          <li key={idx} className="bg-gray-100 p-2 rounded">
-            <strong>{e.type}</strong> at {new Date(e.timestamp).toLocaleTimeString()} — value: {e.value}
-          </li>
-        ))}
-      </ul>
+    <div>
+      {isDashboard ? <DashboardNavbar /> : <LandingNavbar />}
+
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route
+          path="/dashboard/*"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
     </div>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
+  );
+}

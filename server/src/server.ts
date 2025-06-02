@@ -1,22 +1,19 @@
-import http from 'http';
-import app from './app';
+// src/server.ts
+import { createServer } from 'http';
 import { Server } from 'socket.io';
+import app from './app';
 import { setupSocket } from './sockets/connection';
-import dotenv from 'dotenv';
 
-dotenv.config();
-const PORT = process.env.PORT || 5000;
-
-const server = http.createServer(app);
-const io = new Server(server, {
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
   cors: {
-    origin: 'http://localhost:5173',
-    methods: ['GET', 'POST'],
+    origin: '*',
   },
 });
 
-setupSocket(io); // Pass io to your socket handler
+setupSocket(io);
 
-server.listen(PORT, () => {
+const PORT = process.env.PORT || 5000;
+httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
